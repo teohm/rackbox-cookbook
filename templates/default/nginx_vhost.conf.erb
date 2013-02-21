@@ -1,0 +1,62 @@
+upstream <%= @appname %> {
+<% @servers.each do |server| -%>
+  server <%= server %> fail_timeout=0;
+<% end -%>
+}
+
+server {
+  server_name <%= @hostname %>;
+  listen <%= @listen_port %>;
+
+  root <%= @root_path %>;
+
+<% if @ssl_key && @ssl_cert -%>
+  ssl on;
+  ssl_certificate     <%= @ssl_cert %>;
+  ssl_certificate_key <%= @ssl_key %>;
+  ssl_protocols SSLv3 TLSv1;
+  ssl_ciphers ECDHE-RSA-AES256-SHA384:AES256-SHA256:RC4:HIGH:!MD5:!aNULL:!EDH:!AESGCM;
+  ssl_prefer_server_ciphers on;
+<% end -%>
+
+  access_log <%= @log_dir %>/<%= @appname %>-access.log combined;
+  error_log  <%= @log_dir %>/<%= @appname %>-error.log;
+
+  rewrite_log on;
+
+  # use the application's 500.html page
+  error_page 500 502 503 504 /500.html;
+
+  # allow clients to upload large files (if necessary)
+  client_max_body_size 4G;
+
+  location / {
+    try_files /system/maintenance.html
+              $uri $uri/index.html $uri.html
+              @app;
+  }
+
+  location ~ ^/(assets)/ {
+    gzip_static on;
+    expires max;
+    add_header Cache-Control public;
+  }
+
+  location @app {
+    proxy_pass        http://<%= @appname %>;
+    proxy_redirect    off;
+
+    proxy_set_header  Host                $http_host;
+    proxy_set_header  X-Real-IP           $remote_addr;
+    proxy_set_header  X-Forwarded-For     $proxy_add_x_forwarded_for;
+    proxy_set_header  X-Forwarded-Proto   $scheme;
+
+    client_max_body_size        100m;
+    client_body_buffer_size     128k;
+
+    proxy_buffer_size           4k;
+    proxy_buffers               4 32k;
+    proxy_busy_buffers_size     64k;
+    proxy_temp_file_write_size  64k;
+  }
+}

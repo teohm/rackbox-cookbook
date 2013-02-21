@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd <%= @options[:working_directory] %>
+source /etc/profile.d/rbenv.sh
+
+exec 2>&1
+exec <%= node[:runit][:chpst_bin] %> -u <%= @options[:user] %>:<%= @options[:group] %> <%= File.join(@options[:working_directory], 'bin', (@options[:smells_like_rack] ? 'unicorn' : 'unicorn_rails')) %> -E <%= @options[:rails_env] %> -c <%= @options[:unicorn_config_file] %>
+
