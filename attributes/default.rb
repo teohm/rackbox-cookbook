@@ -13,9 +13,17 @@ default["rackbox"]["default_config"]["unicorn"]["preload_app"] = false
 default["rackbox"]["default_config"]["unicorn"]["worker_processes"] = [node[:cpu][:total].to_i * 4, 8].min
 default["rackbox"]["default_config"]["unicorn"]["before_fork"] = 'sleep 1'
 
-default["rackbox"]["default_config"]["runit"]["template_name"] = "unicorn"
-default["rackbox"]["default_config"]["runit"]["template_cookbook"] = "rackbox"
-default["rackbox"]["default_config"]["runit"]["rails_env"] = "production"
+default["rackbox"]["default_config"]["unicorn_runit"]["template_name"] = "unicorn"
+default["rackbox"]["default_config"]["unicorn_runit"]["template_cookbook"] = "rackbox"
+default["rackbox"]["default_config"]["unicorn_runit"]["rack_env"] = "production"
+
+default["rackbox"]["default_config"]["passenger_runit"]["template_name"] = "passenger"
+default["rackbox"]["default_config"]["passenger_runit"]["template_cookbook"] = "rackbox"
+default["rackbox"]["default_config"]["passenger_runit"]["rack_env"] = "production"
+default["rackbox"]["default_config"]["passenger_runit"]["max_pool_size"] = 6
+default["rackbox"]["default_config"]["passenger_runit"]["min_instances"] = 1
+default["rackbox"]["default_config"]["passenger_runit"]["spawn_method"] = "smart-lv2"
+default["rackbox"]["default_config"]["passenger_runit"]["host"] = "localhost"
 
 set['nginx']['init_style'] = "init"
 

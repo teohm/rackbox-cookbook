@@ -1,0 +1,22 @@
+#!/bin/bash --login
+
+cd <%= @options[:working_directory] %>
+
+export HOME=<%= @options[:working_directory] %>
+
+exec 2>&1
+exec <%= node[:runit][:chpst_bin] %> -u <%= @options[:user] %>:<%= @options[:group] %> \
+  <%= File.join('.', 'bin', 'passenger') %> start \
+    <%= @options[:working_directory] %> \
+  <% if @options[:socket] %>
+    --socket <%= @options[:socket] %> \
+  <% else %>
+    --address <%= @options[:host] %> \
+    --port <%= @options[:port] %> \
+  <% end %>
+    --environment <%= @options[:rack_env] %> \
+    --max-pool-size <%= @options[:max_pool_size] %> \
+    --min-instances <%= @options[:min_instances] %> \
+    --spawn-method <%= @options[:spawn_method] %>
+
+
