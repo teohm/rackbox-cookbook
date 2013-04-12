@@ -27,13 +27,8 @@ module Rackbox
           :min_instances     => config["min_instances"],
           :spawn_method      => config["spawn_method"]
         )
-        action [:disable, :enable]
+        restart_on_update true
       end
-
-      # TODO this doesn't start the app
-      runit_service app["appname"] do
-        action :start
-      end if File.exists?(app_dir)
     end
 
     def setup_unicorn_runit(app, app_dir)
@@ -55,12 +50,8 @@ module Rackbox
           :unicorn_config_file  => unicorn_config_file,
           :working_directory    => app_dir
         )
-        action [:disable, :enable]
+        restart_on_update true
       end
-
-      runit_service app["appname"] do
-        action :start
-      end if File.exists?(app_dir)
     end
 
     def merge_runit_config(default_config, app_config)
