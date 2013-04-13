@@ -9,5 +9,5 @@ version          "0.1.0"
 depends 'appbox'
 depends 'rbenv'
 depends 'nginx'
-depends 'unicorn'
+depends 'unicorn', ">= 1.2.2"
 depends 'runit', '>= 1.1.2'
