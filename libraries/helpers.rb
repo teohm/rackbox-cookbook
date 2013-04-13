@@ -27,6 +27,7 @@ module Rackbox
           :min_instances     => config["min_instances"],
           :spawn_method      => config["spawn_method"]
         )
+        restart_on_update false
       end
     end
 
@@ -49,6 +50,7 @@ module Rackbox
           :unicorn_config_file  => unicorn_config_file,
           :working_directory    => app_dir
         )
+        restart_on_update false
       end
     end
 
