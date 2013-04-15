@@ -3,6 +3,7 @@
 # Recipe:: default
 #
 
+include_recipe "appbox"
 include_recipe "rackbox::ruby"
 include_recipe "rackbox::nginx"
 include_recipe "runit"
