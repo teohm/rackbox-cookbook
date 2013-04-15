@@ -1,0 +1,41 @@
+{
+  "name": "rackbox",
+  "description": "Setup a rack-based application server to run unicorn and passenger apps.",
+  "long_description": "# Chef cookbook - rackbox (v0.1.0)\n\nSetup a **Rack-based application server** to run Unicorn & Passenger apps.\n\nIt performs the following tasks when setup the server:\n\n * setup a ruby version manager (now using `rbenv`).\n * setup `nginx` as front-end server.\n * setup `runit` service.\n * setup Unicorn apps (if any).\n * setup Passenger apps (if any).\n\n## Install\n\nTo install with **Berkshelf**, add this into `Berksfile`:\n\n```\ncookbook 'appbox'\n```\n\nAnd overwrite attributes to customize the cookbook.\n\nSee also [teohm/kitchen-sample](https://github.com/teohm/kitchen-example) for `rackbox` usage example with chef-solo.\n\n# Attributes\n\nYou **should** specify the ruby versions to be installed:\n\n * `node[\"rackbox\"][\"ruby\"][\"versions\"]` (default: `[\"1.9.3-p385\"]`) - ruby versions to be installed.\n * `node[\"rackbox\"][\"ruby\"][\"global_version\"]` (default: `\"1.9.3-p385\"`) - set the system-wide ruby version.\n \nTo setup **unicorn apps**, provide a list of unicorn app entries:\n\n * `node[\"rackbox\"][\"apps\"][\"unicorn\"]` (default: `[]`)\n \n   ```\n   # Example:\n   node[\"rackbox\"][\"apps\"][\"unicorn\"] = [\n     {\n       \"appname\" => \"app1\",            # app name\n       \"hostname\" => \"app1.test.com\"   # domain name\n     },\n     {\n       \"appname\" => \"app2\",            # app name\n       \"hostname\" => \"app2.test.com\",  # domain name\n       \"nginx_config\" => {             # overwrite default config:\n         ...                           #   node[\"rackbox\"][\"default_config\"][\"nginx\"]\n       },\n       \"runit_config\" => {             # overwrite default config:\n         \"rack_env\" => \"staging\"       #   node[\"rackbox\"][\"default_config\"][\"unicorn_runit\"]\n       }\n     }\n   ]\n   ```\n\nTo setup **passenger apps**, provide a list of passenger app entries:\n\n * `node[\"rackbox\"][\"apps\"][\"passenger\"]` (default: `[]`)\n \n   ```\n   # Example:\n   node[\"rackbox\"][\"apps\"][\"passenger\"] = [\n     {\n       \"appname\" => \"app3\",            # app name\n       \"hostname\" => \"app3.test.com\"   # domain name\n     },\n     {\n       \"appname\" => \"app4\",            # app name\n       \"hostname\" => \"app4.test.com\",  # domain name\n       \"nginx_config\" => {             # overwrite default config:\n         ...                           #   node[\"rackbox\"][\"default_config\"][\"nginx\"]\n       },\n       \"runit_config\" => {             # overwrite default config:\n         \"rack_env\" => \"staging\"       #   node[\"rackbox\"][\"default_config\"][\"passenger_runit\"]\n       }\n     }\n   ]\n   ```\n\nYou may change the **default config** settings:\n\n * **nginx**:\n   * `node[\"rackbox\"][\"default_config\"][\"nginx\"][\"template_name\"]` (default: `\"nginx_vhost.conf.erb\"`) - nginx vhost/site config template.\n   * `node[\"rackbox\"][\"default_config\"][\"nginx\"][\"template_cookbook\"]` (default: `\"rackbox\"`) - cookbook containing the nginx vhost/site config template.\n   * `node[\"rackbox\"][\"default_config\"][\"nginx\"][\"listen_port\"]` (default: `\"80\"`) - nginx vhost/site listen port.\n   * `node[\"rackbox\"][\"upstream_start_port\"][\"unicorn\"]` (default: `10001`) - start number for unicorn app listen port.\n   * `node[\"rackbox\"][\"upstream_start_port\"][\"passenger\"]` (default: `20001`) - start number for passenger app listen port.\n * **unicorn**:\n   * `node[\"rackbox\"][\"default_config\"][\"unicorn\"][\"listen_port_options\"]` (default: `{ :tcp_nodelay => true, :backlog => 100 }`) - unicorn listen port options.\n   * `node[\"rackbox\"][\"default_config\"][\"unicorn\"][\"worker_timeout\"]` (default: `60`) - unicorn worker timeout.\n   * `node[\"rackbox\"][\"default_config\"][\"unicorn\"][\"preload_app\"]` (default: `false`) - unicorn preload app flag.\n   * `node[\"rackbox\"][\"default_config\"][\"unicorn\"][\"worker_processes\"]` (default: `[node[:cpu][:total].to_i * 4, 8].min`) - total unicorn worker.\n   * `node[\"rackbox\"][\"default_config\"][\"unicorn\"][\"before_fork\"]` (default: `'sleep 1'`) - unicorn before_fork handler.\n * **unicorn_runit**:\n   * `node[\"rackbox\"][\"default_config\"][\"unicorn_runit\"][\"template_name\"]` (default: `\"unicorn\"`) - name to lookup unicorn runit templates (templates: `\"sv-#{template_name}-run.erb\"`, `\"sv-#{template_name}-log-run.erb`).\n   * `node[\"rackbox\"][\"default_config\"][\"unicorn_runit\"][\"template_cookbook\"]` (default: `\"rackbox\"`) - cookbook containing the templates.\n   * `node[\"rackbox\"][\"default_config\"][\"unicorn_runit\"][\"rack_env\"]` (default: `\"production\"`) - default RACK_ENV to run a unicorn app.\n * **passenger_runit**:\n   * `node[\"rackbox\"][\"default_config\"][\"passenger_runit\"][\"template_name\"]` (default: `\"passenger\"`) - name to lookup passenger runit templates (templates: `\"sv-#{template_name}-run.erb\"`, `\"sv-#{template_name}-log-run.erb`).\n   * `node[\"rackbox\"][\"default_config\"][\"passenger_runit\"][\"template_cookbook\"]` (default: `\"rackbox\"`) - cookbook containing the  templates.\n   * `node[\"rackbox\"][\"default_config\"][\"passenger_runit\"][\"rack_env\"]` (default: `\"production\"`) - default RACK_ENV to run a passenger app.\n   * `node[\"rackbox\"][\"default_config\"][\"passenger_runit\"][\"max_pool_size\"]` (default: `6`) - passenger max pool size.\n   * `node[\"rackbox\"][\"default_config\"][\"passenger_runit\"][\"min_instances\"]` (default: `1`) - passenger min instance.\n   * `node[\"rackbox\"][\"default_config\"][\"passenger_runit\"][\"spawn_method\"]` (default: `\"smart-lv2\"`) - passenger spawn method.\n   * `node[\"rackbox\"][\"default_config\"][\"passenger_runit\"][\"host\"]` (default: `\"localhost\"`) - passenger host.\n\n## Recipes\n\n * `rackbox::default` - run all recipes.\n * `rackbox::ruby` - setup a ruby version manager `rbenv`.\n * `rackbox::nginx` - setup `nginx` as front-end server.\n * `rackbox::unicorn` - setup `unicorn` apps, if any.\n * `rackbox::passenger` - setup `passenger` apps, if any.\n\n## Requirements\n\n### Supported Platforms\n\n * `ubuntu` - tested on Ubuntu 12.10\n * `debian` - should work\n \nPull requests, issue and test reports are welcomed to better support your platform.\n \n### Cookbook Dependencies\n\n * Depends on these cookbooks:\n   * appbox\n   * rbenv\n   * nginx\n   * unicorn (>= 1.2.2)\n   * runit (>= 1.1.2)\n\n## License and Authors\n\n * Author:: Huiming Teo <teohuiming@gmail.com>\n\nCopyright 2013, Huiming Teo\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.",
+  "maintainer": "Huiming Teo",
+  "maintainer_email": "teohuiming@gmail.com",
+  "license": "Apache License 2.0",
+  "platforms": {
+    "ubuntu": ">= 0.0.0",
+    "debian": ">= 0.0.0"
+  },
+  "dependencies": {
+    "appbox": ">= 0.0.0",
+    "rbenv": ">= 0.0.0",
+    "nginx": ">= 0.0.0",
+    "unicorn": ">= 1.2.2",
+    "runit": ">= 1.1.2"
+  },
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "conflicting": {
+  },
+  "providing": {
+  },
+  "replacing": {
+  },
+  "attributes": {
+  },
+  "groupings": {
+  },
+  "recipes": {
+    "rackbox": "run all recipes.",
+    "rackbox::ruby": "setup a ruby version manager `rbenv`.",
+    "rackbox::nginx": "setup `nginx` as front-end server.",
+    "rackbox::unicorn": "setup `unicorn` apps, if any.",
+    "rackbox::passenger": "setup `passenger` apps, if any."
+  },
+  "version": "0.1.0"
+}
