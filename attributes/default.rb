@@ -25,5 +25,8 @@ default["rackbox"]["default_config"]["passenger_runit"]["min_instances"] = 1
 default["rackbox"]["default_config"]["passenger_runit"]["spawn_method"] = "smart-lv2"
 default["rackbox"]["default_config"]["passenger_runit"]["host"] = "localhost"
 
+default["rackbox"]["apps"]["unicorn"] = []
+default["rackbox"]["apps"]["passenger"] = []
+
 set['nginx']['init_style'] = "init"
 
