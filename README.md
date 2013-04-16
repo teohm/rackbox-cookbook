@@ -1,4 +1,4 @@
-# Chef cookbook - rackbox (v0.1.1)
+# Chef cookbook - rackbox (v0.1.2)
 
 Setup a **Rack-based application server** to run Unicorn & Passenger apps.
 
