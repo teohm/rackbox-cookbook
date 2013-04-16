@@ -17,6 +17,8 @@ exec <%= node[:runit][:chpst_bin] %> -u <%= @options[:user] %>:<%= @options[:gro
     --environment <%= @options[:rack_env] %> \
     --max-pool-size <%= @options[:max_pool_size] %> \
     --min-instances <%= @options[:min_instances] %> \
-    --spawn-method <%= @options[:spawn_method] %>
+    --spawn-method <%= @options[:spawn_method] %> \
+    --log-file <%= File.join(@options[:working_directory], 'log', 'passenger.log') %> \
+    --pid-file <%= File.join(@options[:working_directory], 'log', 'passenger.pid') %>
 
 
