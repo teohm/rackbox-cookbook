@@ -15,7 +15,7 @@ It performs the following tasks when setup the server:
 To install with **Berkshelf**, add this into `Berksfile`:
 
 ```
-cookbook 'appbox'
+cookbook 'rackbox'
 ```
 
 And overwrite attributes to customize the cookbook.
