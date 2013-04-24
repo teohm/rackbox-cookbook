@@ -12,6 +12,8 @@ module Rackbox
         app["runit_config"]
       )
       runit_service app["appname"] do
+        owner node["appbox"]["deploy_user"]
+        group node["appbox"]["deploy_user"]
         run_template_name  config["template_name"]
         log_template_name  config["template_name"]
         cookbook       config["template_cookbook"]
@@ -39,6 +41,8 @@ module Rackbox
       unicorn_config_file = unicorn_config_filepath(app["appname"])
 
       runit_service app["appname"] do
+        owner node["appbox"]["deploy_user"]
+        group node["appbox"]["deploy_user"]
         run_template_name  config["template_name"]
         log_template_name  config["template_name"]
         cookbook       config["template_cookbook"]
