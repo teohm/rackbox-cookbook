@@ -46,7 +46,6 @@ module Rackbox
           :user                 => node["appbox"]["apps_user"],
           :group                => node["appbox"]["apps_user"],
           :rack_env            => config["rack_env"],
-          :smells_like_rack     => true, #::File.exists?(::File.join(app_dir, "config.ru")),
           :unicorn_config_file  => unicorn_config_file,
           :working_directory    => app_dir
         )
