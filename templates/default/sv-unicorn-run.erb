@@ -1,8 +1,9 @@
 #!/bin/bash --login
 
 exec 2>&1
+[ -f <%= @options[:working_directory] %>/config.ru ] && unicorn_binary=unicorn || unicorn_binary=unicorn_rails
 exec <%= node[:runit][:chpst_bin] %> -u <%= @options[:user] %>:<%= @options[:group] %> \
-  <%= File.join(@options[:working_directory], 'bin', (@options[:smells_like_rack] ? 'unicorn' : 'unicorn_rails')) %> \
+  <%= File.join(@options[:working_directory], 'bin', '$unicorn_binary') %> \
     -E <%= @options[:rack_env] %> \
     -c <%= @options[:unicorn_config_file] %>
 
