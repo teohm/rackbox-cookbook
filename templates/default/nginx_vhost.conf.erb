@@ -11,7 +11,7 @@ server {
   root <%= @root_path %>;
 
 <% if @ssl_key && @ssl_cert -%>
-  ssl on;
+  listen 443 ssl;
   ssl_certificate     <%= @ssl_cert %>;
   ssl_certificate_key <%= @ssl_key %>;
   ssl_protocols SSLv3 TLSv1;
